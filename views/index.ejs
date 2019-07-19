@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>外国語</title>
+<script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet"/>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<style type='text/css'>
+html, body{
+  text-align: center;
+  background-color: #fafafa;
+  font-size: 20px;
+  color: #333;
+}
+.cyan_border{
+  border: solid 5px #cff;
+}
+.red_border{
+  border: solid 5px #f00;
+}
+ul { list-style: none; }
+audio { display: none; margin-bottom: 10px; }
+
+.balloon1 {
+  position: relative;
+  display: inline-block;
+  margin: 1.5em 0;
+  padding: 7px 10px;
+  min-width: 120px;
+  max-width: 100%;
+  color: #555;
+  font-size: 16px;
+  background: #e0edff;
+}
+
+.balloon1:before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -15px;
+  border: 15px solid transparent;
+  border-top: 15px solid #e0edff;
+}
+
+.balloon1 p {
+  margin: 0;
+  padding: 0;
+}
+</style>
+<script>
+voices = {
+	'en': { voice: 'en-US_AllisonV3Voice', model: 'en-US_BroadbandModel' },
+	'fr': { voice: 'fr-FR_ReneeV3Voice', model: 'fr-FR_BroadbandModel' },
+	'de': { voice: 'de-DE_DieterV3Voice', model: 'de-DE_BroadbandModel' },
+	'es': { voice: 'es-ES_EnriqueV3Voice', model: 'es-ES_BroadbandModel' },
+	//'it': { voice: 'it-IT_FrancescaV3Voice' model: '' },
+	'pt': { voice: 'pt-BR_IsabelaV3Voice', model: 'pt-BR_BroadbandModel' }
+};
+
+$(function(){
+	$('#dst_lang').change( function(){
+    $('#spoken_text').html( '' );
+		var dst_lang = $('#dst_lang').val();
+		var dst_voice = voices[dst_lang].voice;
+    $('#sensei_img').prop( 'src', '/imgs/' + dst_lang + '.png' );
+		//console.log( 'dst_lang=' + dst_lang + ', dst_voice = ' + dst_voice );
+
+	  var src_text = $('#src_text').val();
+    if( src_text ){
+      translate_text();
+    }else{
+      $('#dst_text').html( '' );
+    }
+	});
+
+	$('#sensei_img').click( function(){
+		var dst_lang = $('#dst_lang').val();
+		var dst_voice = voices[dst_lang].voice;
+		var dst_text = $('#dst_text').html();
+		//console.log( 'dst_lang=' + dst_lang + ', dst_voice = ' + dst_voice + ', dst_text = ' + dst_text );
+    speechText( dst_text, dst_voice );
+  });
+
+	$('#microphone_img').mousedown( function(){
+    $('#spoken_text').html( '' );
+    $(this).removeClass( 'cyan_border' );
+    $(this).addClass( 'red_border' );
+    startRecording();
+  });
+
+	$('#microphone_img').mouseup( function(){
+    $(this).removeClass( 'red_border' );
+    $(this).addClass( 'cyan_border' );
+    stopRecording();
+  });
+});
+
+function translate_text(){
+	var src_text = $('#src_text').val();
+	var src_lang = 'ja';
+	var dst_lang = $('#dst_lang').val();
+
+  if( src_text && dst_lang ){
+    var obj = { text: src_text, source: src_lang, target: dst_lang };
+    $.ajax({
+      type: 'POST',
+      url: '/translate',
+      data: obj,
+      success: function( data ){
+        //console.log( data );
+        if( data.status && data.translations && data.translations.length > 0 ){
+          var translation = data.translations[0].translation;
+          //console.log( '-> ' + translation );
+          $('#dst_text').html( translation );
+        }else{
+          $('#dst_text').html( '?' );
+        }
+      },
+      error: function( xhr, err, status ){
+        $('#dst_text').html( '' + err );
+      }
+    });
+  }else{
+    $('#dst_text').html( '' );
+  }
+}
+</script>
+</head>
+<body>
+
+<table class="table">
+	<tr>
+		<td>
+			日本語
+		<!--
+			<select id="src_lang">
+			</select>
+		-->
+		</td>
+		<td>
+			<input type="text" id="src_text" class="form-control" placeholder="外国語に翻訳したい日本語文章を入力してください。"/>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<select id="dst_lang">
+				<option value="en">英語</option>
+				<option value="fr">フランス語</option>
+				<option value="de">ドイツ語</option>
+				<option value="es">スペイン語</option>
+				<option value="pt">ポルトガル語</option>
+			</select>
+			<button id="translate_btn" class="btn btn-primary btn-xs" onClick="translate_text();"/><i class="fas fa-arrow-circle-down"></i></button>
+		</td>
+		<td>&nbsp;
+		</td>
+	</tr>
+	<tr>
+		<td>
+      <div id="dst_text_div" class="balloon1"><p id="dst_text"></p></div>
+    	<br/><img id="sensei_img" src="./imgs/en.png"/>
+      <br/><audio id="sample_speech" src="" controls autoplay></audio>
+		</td>
+		<td>
+      <div id="spoken_text_div" class="balloon1"><p id="spoken_text"></p></div>
+	    <br/><img id="microphone_img" class="cyan_border" src="./imgs/microphone.png"/>
+		</td>
+	</tr>
+</table>
+
+<h3>Status</h3>
+<pre id="log"></pre>
+
+<script>
+function __log(e, data) {
+	log.innerHTML += e + " " + (data || '') + '\n';
+}
+
+var audio_context;
+var recorder;
+
+function startUserMedia(stream){
+	var input = audio_context.createMediaStreamSource(stream);
+	__log('Media stream created.');
+
+	recorder = new Recorder(input);
+	__log('Recorder initialised.');
+}
+
+function startRecording(){
+	recorder && recorder.record();
+	__log('Recording...');
+}
+
+function stopRecording(){
+	recorder && recorder.stop();
+	__log('Stopped recording.');
+
+	sendRecordData();
+	recorder.clear();
+}
+
+function sendRecordData(){
+	recorder && recorder.exportWAV(function(blob) {
+		var fd = new FormData();
+		fd.append( 'data', blob );
+		var dst_lang = $('#dst_lang').val();
+		var dst_model = voices[dst_lang].model;
+		fd.append( 'model', dst_model );
+		$.ajax({
+			type: 'POST',
+			url: './s2t',
+			data: fd,
+			processData: false,
+			contentType: false,
+		}).done( function( data ){
+      //console.log( data.result );
+      $('#spoken_text').html( data.result );
+
+      $.ajax({
+				type: 'POST',
+				url: './compare',
+				data: { text1: $('#dst_text').text(), text2: data.result },
+			}).done( function( result1 ){
+        console.log( result1 );
+        //alert( result1.score );
+      });
+		});
+	});
+}
+
+function speechText( text, voice ){
+  $('#sample_speech').attr( 'src', './t2s?text=' + text + '&voice=' + voice );
+}
+
+window.onload = function init(){
+	try{
+		window.AudioContext = window.AudioContext || window.webkitAudioContext;
+		navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+		window.URL = window.URL || window.webkitURL;
+
+		audio_context = new AudioContext;
+		__log('Audio context set up.');
+		__log('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
+	}
+	catch (e){
+		alert('No web audio support in this browser!');
+	}
+
+	navigator.getUserMedia({audio: true}, startUserMedia, function(e) {
+		__log('No live audio input: ' + e);
+	});
+};
+</script>
+
+<script src="./js/recorder.js"></script>
+</body>
+</html>
