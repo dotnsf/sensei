@@ -4,8 +4,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <title>外国語</title>
 <script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet"/>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" rel="stylesheet"/>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -63,6 +63,24 @@ voices = {
 };
 
 $(function(){
+  $('a').click( function(){
+    var aid = $(this).attr( 'id' );
+
+    if( aid != 'aOne' ){
+      var src_text = $('#src_text').val();
+      if( src_text ){
+        $('#selectOne').html( src_text );
+      }
+    }
+
+    if( aid != 'aTwo' ){
+      var dst_lang_text = $('#dst_lang option:selected').html();
+      if( dst_lang_text ){
+        $('#selectTwo').html( dst_lang_text );
+      }
+    }
+  });
+
 	$('#dst_lang').change( function(){
     $('#spoken_text').html( '' );
 		var dst_lang = $('#dst_lang').val();
@@ -117,25 +135,57 @@ function translate_text(){
           var translation = data.translations[0].translation;
           //console.log( '-> ' + translation );
           $('#dst_text').html( translation );
+          $('#selectThree').html( translation );
         }else{
           $('#dst_text').html( '?' );
+          $('#selectThree').html( '?' );
         }
+        $('#aThree').click();
       },
       error: function( xhr, err, status ){
         $('#dst_text').html( '' + err );
+        $('#selectThree').html( '' + err );
+        $('#aThree').click();
       }
     });
   }else{
     $('#dst_text').html( '' );
+    $('#selectThree').html( '' );
   }
 }
 </script>
 </head>
 <body>
 
-<table class="table">
-	<tr>
-		<td>
+<div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="card">
+    <div class="card-header" role="tab" id="headingOne">
+      <h5 class="mb-0">
+        <a id="aOne" class="text-body" data-toggle="collapse" href="#collapseOne" role="button" aria-expanded="true" aria-controles="collapseOne">
+          日本語文章
+        </a>
+        <span id="selectOne"></span>
+      </h5>
+    </div>
+    <div class="collapse show" role="tabpanel" id="collapseOne" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+			  <input type="text" id="src_text" class="form-control" placeholder="外国語に翻訳したい日本語文章を入力してください。"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" role="tab" id="headingTwo">
+      <h5 class="mb-0">
+        <a id="aTwo" class="text-body" data-toggle="collapse" href="#collapseTwo" role="button" aria-expanded="false" aria-controles="collapseTwo">
+          翻訳先言語
+        </a>
+        <span id="selectTwo"></span>
+      </h5>
+    </div>
+    <div class="collapse" role="tabpanel" id="collapseTwo" aria-labelledby="headingTwo" data-parent="#accordion">
+      <div class="card-body">
+
 			<select id="dst_lang">
 				<option value="en">英語</option>
 				<option value="fr">フランス語</option>
@@ -144,26 +194,67 @@ function translate_text(){
 				<option value="pt">ポルトガル語</option>
 			</select>
 			<button id="translate_btn" class="btn btn-primary btn-xs" onClick="translate_text();"/><i class="fas fa-arrow-circle-down"></i></button>
-		</td>
-		<td>
-			<input type="text" id="src_text" class="form-control" placeholder="外国語に翻訳したい日本語文章を入力してください。"/>
-		</td>
-	</tr>
-	<tr>
-		<td>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" role="tab" id="headingThree">
+      <h5 class="mb-0">
+        <a id="aThree" class="text-body" data-toggle="collapse" href="#collapseThree" role="button" aria-expanded="false" aria-controles="collapseThree">
+          翻訳結果・模範発音
+        </a>
+        <span id="selectThree"></span>
+      </h5>
+    </div>
+    <div class="collapse" role="tabpanel" id="collapseThree" aria-labelledby="headingThree" data-parent="#accordion">
+      <div class="card-body">
+
       <div id="dst_text_div" class="balloon1"><p id="dst_text"></p></div>
     	<br/><img id="sensei_img" src="./imgs/en.png"/>
       <br/><audio id="sample_speech" src="" controls autoplay></audio>
-		</td>
-		<td>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" role="tab" id="headingFour">
+      <h5 class="mb-0">
+        <a id="aFour" class="text-body" data-toggle="collapse" href="#collapseFour" role="button" aria-expanded="false" aria-controles="collapseFour">
+          発音
+        </a>
+        <span id="selectFour"></span>
+      </h5>
+    </div>
+    <div class="collapse" role="tabpanel" id="collapseFour" aria-labelledby="headingFour" data-parent="#accordion">
+      <div class="card-body">
+
       <div id="spoken_text_div" class="balloon1"><p id="spoken_text">（マイクをマウスで押している間だけ録音します）</p></div>
 	    <br/><img id="microphone_img" class="cyan_border" src="./imgs/microphone.png"/>
-		</td>
-	</tr>
-</table>
 
-<h3>Status</h3>
-<pre id="log"></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" role="tab" id="headingFive">
+      <h5 class="mb-0">
+        <a id="aFive" class="text-body" data-toggle="collapse" href="#collapseFive" role="button" aria-expanded="false" aria-controles="collapseFive">
+          ステータス情報
+        </a>
+      </h5>
+    </div>
+    <div class="collapse" role="tabpanel" id="collapseFive" aria-labelledby="headingFive" data-parent="#accordion">
+      <div class="card-body">
+
+      <pre id="log"></pre>
+
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 function __log(e, data) {
@@ -210,6 +301,7 @@ function sendRecordData(){
 		}).done( function( data ){
       //console.log( data.result );
       $('#spoken_text').html( data.result );
+      $('#selectFour').html( data.result );
 
       $.ajax({
 				type: 'POST',
