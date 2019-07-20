@@ -237,6 +237,7 @@ app.post( '/compare', function( req, res ){
   }
   score -= score * t2_count / t2s.length;
 
+  /*
   console.log( ' t1_count = ' + t1_count );
   console.log( ' t1s.length = ' + t1s.length );
   console.log( ' t1_count/t1s.length = ' + ( t1_count / t1s.length ) );
@@ -244,6 +245,7 @@ app.post( '/compare', function( req, res ){
   console.log( ' t2s.length = ' + t2s.length );
   console.log( ' t2_count/t2s.length = ' + ( t2_count / t2s.length ) );
   console.log( ' score = ' + score );
+  */
 
   res.write( JSON.stringify( { status: true, score: score }, 2, null ) );
   res.end();

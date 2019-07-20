@@ -136,18 +136,6 @@ function translate_text(){
 <table class="table">
 	<tr>
 		<td>
-			日本語
-		<!--
-			<select id="src_lang">
-			</select>
-		-->
-		</td>
-		<td>
-			<input type="text" id="src_text" class="form-control" placeholder="外国語に翻訳したい日本語文章を入力してください。"/>
-		</td>
-	</tr>
-	<tr>
-		<td>
 			<select id="dst_lang">
 				<option value="en">英語</option>
 				<option value="fr">フランス語</option>
@@ -157,7 +145,8 @@ function translate_text(){
 			</select>
 			<button id="translate_btn" class="btn btn-primary btn-xs" onClick="translate_text();"/><i class="fas fa-arrow-circle-down"></i></button>
 		</td>
-		<td>&nbsp;
+		<td>
+			<input type="text" id="src_text" class="form-control" placeholder="外国語に翻訳したい日本語文章を入力してください。"/>
 		</td>
 	</tr>
 	<tr>
@@ -167,7 +156,7 @@ function translate_text(){
       <br/><audio id="sample_speech" src="" controls autoplay></audio>
 		</td>
 		<td>
-      <div id="spoken_text_div" class="balloon1"><p id="spoken_text"></p></div>
+      <div id="spoken_text_div" class="balloon1"><p id="spoken_text">（マイクをマウスで押している間だけ録音します）</p></div>
 	    <br/><img id="microphone_img" class="cyan_border" src="./imgs/microphone.png"/>
 		</td>
 	</tr>
