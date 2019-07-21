@@ -58,7 +58,7 @@ app.post( '/s2t', function( req, res ){
   //. req.file.path に audio/wav
   var filepath = req.file.path;
   var model = req.body.model; //'en-US_BroadbandModel';
-  console.log( 'model = ' + model );
+  //console.log( 'model = ' + model );
 
   var params = {
     audio: fs.createReadStream( filepath ),
@@ -81,7 +81,7 @@ app.post( '/s2t', function( req, res ){
           transcript += ( " " + t );
         }
       }
-      console.log( 'transcript=' + transcript );
+      //console.log( 'transcript=' + transcript );
       res.write( JSON.stringify( { status: true, result: transcript }, 2, null ) );
       res.end();
     }

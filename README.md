@@ -43,7 +43,7 @@ IBM Watson would be your Language pronounciation **sensei**(teacher).
 
 ## How to use
 
-1. Launch web browser(**FireFox recommended**), and open application page.
+1. Launch web browser(**FireFox**), and open application page.
 
     - https://(your runtime application name).mybluemix.net/
 
